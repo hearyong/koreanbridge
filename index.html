@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KoreanBridge – MVP</title>
+    <meta name="description" content="Learn Korean for free with games, media, and travel rewards. KoreanBridge MVP." />
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="image" href="assets/spring.jpg" />
+    <link rel="preload" as="image" href="assets/summer.jpg" />
+    <link rel="preload" as="image" href="assets/fall.jpg" />
+    <link rel="preload" as="image" href="assets/winter.jpg" />
+    <meta property="og:title" content="KoreanBridge" />
+    <meta property="og:description" content="Start learning Korean for free – rewards, travel, K‑culture." />
+    <meta property="og:image" content="assets/spring.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="sr-only" href="#home-heading">Skip to content</a>
+    <div id="app" class="app">
+      <header class="header">
+        <div class="brand">
+          <span class="logo" aria-hidden="true">🌉</span>
+          <h1 data-i18n="title">KoreanBridge</h1>
+        </div>
+        <div class="header-actions">
+          <label class="lang-label" for="lang-select" data-i18n="language">Language</label>
+          <select id="lang-select" class="lang-select" aria-label="Language select">
+            <option value="en" selected>English</option>
+            <option value="ko">한국어</option>
+            <option value="es">Español</option>
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="fr">Français</option>
+            <option value="ru">Русский</option>
+            <option value="hi">हिन्दी</option>
+            <option value="th">ไทย</option>
+            <option value="fil">Filipino</option>
+            <option value="vi">Tiếng Việt</option>
+          </select>
+          <button id="cta-start" class="cta" data-i18n="ctaStart">Start Learning for Free</button>
+        </div>
+      </header>
+
+      <section class="hero">
+        <p class="quote" id="hero-quote"></p>
+        <span class="quote-author" id="hero-author"></span>
+      </section>
+
+      <main class="main">
+        <section id="view-home" class="view view-active" role="region" aria-labelledby="home-heading">
+          <h2 id="home-heading" class="sr-only">Home</h2>
+
+          <div class="grid">
+            <article class="card clickable js-nav" data-target="learning">
+              <div class="card-header">
+                <span class="emoji" aria-hidden="true">📗</span>
+                <h3 data-i18n="cardLearning">Learning</h3>
+              </div>
+              <ul>
+                <li data-i18n="learningItem1">Consonant‑Free Story</li>
+                <li data-i18n="learningItem2">Loanword Vocabulary Game</li>
+              </ul>
+            </article>
+
+            <article class="card clickable js-nav" data-target="media">
+              <div class="card-header">
+                <span class="emoji" aria-hidden="true">🎬</span>
+                <h3 data-i18n="cardMedia">Media</h3>
+              </div>
+              <ul>
+                <li data-i18n="mediaItem1">Video Upload</li>
+                <li data-i18n="mediaItem2">Likes & Comments</li>
+              </ul>
+            </article>
+
+            <article class="card clickable js-nav" data-target="community">
+              <div class="card-header">
+                <span class="emoji" aria-hidden="true">🫂</span>
+                <h3 data-i18n="cardCommunity">Community</h3>
+              </div>
+              <ul>
+                <li data-i18n="communityItem1">Find Friends</li>
+                <li data-i18n="communityItem2">SNS Integration</li>
+              </ul>
+            </article>
+
+            <article class="card clickable js-nav" data-target="kculture">
+              <div class="card-header">
+                <span class="emoji" aria-hidden="true">🎎</span>
+                <h3 data-i18n="cardKculture">K‑Culture</h3>
+              </div>
+              <ul>
+                <li data-i18n="kcultureItem1">Drama</li>
+                <li data-i18n="kcultureItem2">Music</li>
+                <li data-i18n="kcultureItem3">Tradition</li>
+                <li data-i18n="kcultureItem4">Food</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-learning" class="view" role="region" aria-labelledby="learning-heading">
+          <div class="view-header">
+            <button class="btn back js-nav" data-target="home" aria-label="Back">←</button>
+            <h2 id="learning-heading" data-i18n="cardLearning">Learning</h2>
+          </div>
+          <div class="feature-group">
+            <div class="feature">
+              <h3 data-i18n="learningItem1">Consonant‑Free Story</h3>
+              <p data-i18n="learningDesc1">Type Korean text and remove final consonants (batchim) to practice reading.</p>
+              <label for="batchim-input" class="sr-only">Input</label>
+              <textarea id="batchim-input" class="textbox" rows="3" placeholder="예: 한글은 과학적인 문자입니다"></textarea>
+              <div class="row">
+                <button id="btn-batchim" class="btn" data-i18n="btnConvert">Convert</button>
+                <button id="btn-copy" class="btn" data-i18n="btnCopy">Copy</button>
+              </div>
+              <output id="batchim-output" class="output" aria-live="polite"></output>
+            </div>
+
+            <div class="feature">
+              <h3 data-i18n="learningItem2">Loanword Vocabulary Game</h3>
+              <p data-i18n="learningDesc2">Guess the English meaning of a Korean loanword.</p>
+              <div class="row">
+                <span id="loanword" class="badge">노트북</span>
+                <input id="loanword-guess" class="input" placeholder="your guess" />
+                <button id="loanword-check" class="btn" data-i18n="btnCheck">Check</button>
+              </div>
+              <div id="loanword-result" class="hint"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-media" class="view" role="region" aria-labelledby="media-heading">
+          <div class="view-header">
+            <button class="btn back js-nav" data-target="home" aria-label="Back">←</button>
+            <h2 id="media-heading" data-i18n="cardMedia">Media</h2>
+          </div>
+          <div class="feature-group">
+            <div class="feature">
+              <h3 data-i18n="mediaItem1">Video Upload</h3>
+              <input id="file" type="file" accept="video/*" />
+              <p class="hint" data-i18n="mediaNote">This is a demo. Files are not uploaded.</p>
+            </div>
+            <div class="feature">
+              <h3 data-i18n="mediaItem2">Likes & Comments</h3>
+              <div class="row">
+                <button id="like" class="btn">👍 <span id="like-count">0</span></button>
+                <button id="dislike" class="btn">👎 <span id="dislike-count">0</span></button>
+              </div>
+              <div class="comments">
+                <input id="comment-input" class="input" placeholder="Add a comment" />
+                <button id="comment-add" class="btn" data-i18n="btnAdd">Add</button>
+                <ul id="comment-list" class="list"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-community" class="view" role="region" aria-labelledby="community-heading">
+          <div class="view-header">
+            <button class="btn back js-nav" data-target="home" aria-label="Back">←</button>
+            <h2 id="community-heading" data-i18n="cardCommunity">Community</h2>
+          </div>
+          <div class="feature-group">
+            <div class="feature">
+              <h3 data-i18n="communityItem1">Find Friends</h3>
+              <input id="friend-search" class="input" placeholder="username" />
+              <button id="friend-btn" class="btn" data-i18n="btnSearch">Search</button>
+              <ul id="friend-results" class="list"></ul>
+            </div>
+            <div class="feature">
+              <h3 data-i18n="communityItem2">SNS Integration</h3>
+              <p class="hint" data-i18n="snsNote">Connect your social accounts (demo only).</p>
+              <div class="row">
+                <button class="btn">Twitter</button>
+                <button class="btn">YouTube</button>
+                <button class="btn">Instagram</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-kculture" class="view" role="region" aria-labelledby="kculture-heading">
+          <div class="view-header">
+            <button class="btn back js-nav" data-target="home" aria-label="Back">←</button>
+            <h2 id="kculture-heading" data-i18n="cardKculture">K‑Culture</h2>
+          </div>
+          <div class="carousel" aria-roledescription="carousel">
+            <div class="carousel-track" id="kculture-track">
+              <div class="slide">🎭 <span data-i18n="kcultureItem1">Drama</span></div>
+              <div class="slide">🎵 <span data-i18n="kcultureItem2">Music</span></div>
+              <div class="slide">🌸 <span data-i18n="kcultureItem3">Tradition</span></div>
+              <div class="slide">🍲 <span data-i18n="kcultureItem4">Food</span></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="btn" id="kc-prev">◀</button>
+              <button class="btn" id="kc-next">▶</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav">
+        <button class="nav-item js-nav" data-target="rewards">
+          ⭐ <span data-i18n="navRewards">Rewards</span>
+          <span id="coin-badge" class="coin-badge">0</span>
+        </button>
+        <button class="nav-item js-nav" data-target="travel">🧳 <span data-i18n="navTravel">Travel</span></button>
+        <button class="nav-item js-nav" data-target="dictionary">📘 <span data-i18n="navDictionary">Dictionary</span></button>
+      </nav>
+
+      <section id="view-rewards" class="drawer" aria-labelledby="rewards-heading" aria-hidden="true">
+        <div class="drawer-header">
+          <h2 id="rewards-heading" data-i18n="navRewards">Rewards</h2>
+          <button class="btn close" data-close>✕</button>
+        </div>
+        <p data-i18n="rewardsDesc">Earn coins as you learn. This demo stores your coins in the browser.</p>
+        <div class="row">
+          <button id="earn-coin" class="btn" data-i18n="btnEarn">Earn 1 Coin</button>
+          <button id="spend-coin" class="btn" data-i18n="btnSpend">Spend 1 Coin</button>
+        </div>
+      </section>
+
+      <section id="view-travel" class="drawer" aria-labelledby="travel-heading" aria-hidden="true">
+        <div class="drawer-header">
+          <h2 id="travel-heading" data-i18n="navTravel">Travel</h2>
+          <button class="btn close" data-close>✕</button>
+        </div>
+        <div class="cards">
+          <div class="tiny-card">🏙️ Seoul</div>
+          <div class="tiny-card" data-secret="geoje">🏝️ Geoje</div>
+          <div class="tiny-card">🌊 Busan</div>
+          <div class="tiny-card">🏞️ Jeju</div>
+        </div>
+        <p class="hint" data-i18n="travelHint">Find hidden spots in Busan, Geoje, and Gyeongnam!</p>
+      </section>
+
+      <section id="view-dictionary" class="drawer" aria-labelledby="dictionary-heading" aria-hidden="true">
+        <div class="drawer-header">
+          <h2 id="dictionary-heading" data-i18n="navDictionary">Dictionary</h2>
+          <button class="btn close" data-close>✕</button>
+        </div>
+        <div class="feature">
+          <h3 data-i18n="dictTool1">Batchim Remover</h3>
+          <input id="dict-input" class="input" placeholder="예: 맛있다 → 맛이따" />
+          <button id="dict-run" class="btn" data-i18n="btnConvert">Convert</button>
+          <output id="dict-output" class="output"></output>
+        </div>
+
+        <div class="feature">
+          <h3 data-i18n="dictTool2">Loanword Splitter</h3>
+          <input id="loan-split-input" class="input" placeholder="예: 노트북 핸드폰 콜라" />
+          <button id="loan-split-run" class="btn" data-i18n="btnConvert">Convert</button>
+          <div id="loan-split-output" class="output"></div>
+        </div>
+
+        <div class="feature" id="chosung-quiz">
+          <h3 data-i18n="dictTool3">Initial Consonant Quiz</h3>
+          <div class="row">
+            <span id="chosung-question" class="badge" aria-live="polite">ㄴㅌㅂ</span>
+            <input id="chosung-guess" class="input" placeholder="정답 입력" />
+            <button id="chosung-check" class="btn" data-i18n="btnCheck">Check</button>
+            <button id="chosung-next" class="btn" data-i18n="btnNext">Next</button>
+          </div>
+          <div id="chosung-result" class="hint" aria-live="polite"></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>
+
+
+
