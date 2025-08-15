@@ -127,18 +127,23 @@ function updateCoinBadge(value) {
   badge.classList.add('bump');
 }
 
-// Supabase에 새로운 코인 값을 저장하는 함수
+// Supabase에 새로운 코인 값을 저장하는 함수 (디버깅 버전)
 async function saveCoinsToSupabase(value) {
+  console.log('1. saveCoinsToSupabase 함수가 호출되었습니다. 저장할 코인 값:', value); // 단서 1
+
   const v = Math.max(0, Number(value) || 0);
   currentCoins = v; // 앱 내 변수 업데이트
 
-  const { error } = await supabase
-    .from('korean_coin') // 사용자가 만든 테이블 이름
+  const { data, error } = await supabase
+    .from('korean_coin')
     .update({ coin: v }) // 새로운 코인 값으로 업데이트
-    .eq('id', 1); // id가 1인 데이터를
+    .eq('id', 1) // id가 1인 데이터를
+    .select(); // Supabase의 응답을 받아보기 위해 .select() 추가
 
   if (error) {
-    console.error('코인 정보 저장 실패:', error);
+    console.error('2. 코인 정보 저장 실패! Supabase 에러:', error); // 단서 2
+  } else {
+    console.log('3. 코인 정보 저장 성공! Supabase 응답:', data); // 단서 3
   }
 }
 
