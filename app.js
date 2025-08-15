@@ -103,7 +103,7 @@ let currentCoins = 0; // 코인 값을 앱 내에서 기억하기 위한 변수
 
 // 페이지가 처음 로드될 때 Supabase에서 코인 값을 가져옵니다.
 async function initializeCoins() {
-  const { data, error } = await supabase
+  const { data, error } = await window.supabaseClient
     .from('korean_coin') // 사용자가 만든 테이블 이름
     .select('coin')
     .eq('id', 1) // id가 1인 데이터 한 줄을 선택합니다.
@@ -134,7 +134,7 @@ async function saveCoinsToSupabase(value) {
   const v = Math.max(0, Number(value) || 0);
   currentCoins = v; // 앱 내 변수 업데이트
 
-  const { data, error } = await supabase
+  const { data, error } = await window.supabaseClient
     .from('korean_coin')
     .update({ coin: v }) // 새로운 코인 값으로 업데이트
     .eq('id', 1) // id가 1인 데이터를
