@@ -47,6 +47,11 @@ document.querySelectorAll('.js-nav').forEach((el) => {
   });
 });
 
+// CTA button navigation
+document.getElementById('cta-start').addEventListener('click', () => {
+  setHash('learning');
+});
+
 document.querySelectorAll('[data-close]').forEach((btn) =>
   btn.addEventListener('click', closeDrawer)
 );
@@ -92,21 +97,63 @@ function applyFromHash() {
 window.addEventListener('hashchange', applyFromHash);
 applyFromHash();
 
-// Coins stored in localStorage
-const COIN_KEY = 'kb_coins_v1';
-function getCoins() {
-  return Number(localStorage.getItem(COIN_KEY) || '0');
+// Supabase와 연동되는 새로운 코인 관리 코드
+
+let currentCoins = 0; // 코인 값을 앱 내에서 기억하기 위한 변수
+
+// 페이지가 처음 로드될 때 Supabase에서 코인 값을 가져옵니다.
+async function initializeCoins() {
+  const { data, error } = await supabase
+    .from('korean_coin') // 사용자가 만든 테이블 이름
+    .select('coin')
+    .eq('id', 1) // id가 1인 데이터 한 줄을 선택합니다.
+    .single();
+
+  if (error) {
+    console.error('코인 정보 로딩 실패:', error);
+  } else if (data) {
+    currentCoins = data.coin;
+    updateCoinBadge(currentCoins);
+  }
 }
-function setCoins(value) {
+
+// 화면의 코인 배지를 업데이트하는 함수
+function updateCoinBadge(value) {
   const v = Math.max(0, Number(value) || 0);
-  localStorage.setItem(COIN_KEY, String(v));
   const badge = document.getElementById('coin-badge');
   badge.textContent = String(v);
   badge.classList.remove('bump');
-  void badge.offsetWidth;
+  void badge.offsetWidth; // 애니메이션 재시작을 위한 트릭
   badge.classList.add('bump');
 }
-setCoins(getCoins());
+
+// Supabase에 새로운 코인 값을 저장하는 함수
+async function saveCoinsToSupabase(value) {
+  const v = Math.max(0, Number(value) || 0);
+  currentCoins = v; // 앱 내 변수 업데이트
+
+  const { error } = await supabase
+    .from('korean_coin') // 사용자가 만든 테이블 이름
+    .update({ coin: v }) // 새로운 코인 값으로 업데이트
+    .eq('id', 1); // id가 1인 데이터를
+
+  if (error) {
+    console.error('코인 정보 저장 실패:', error);
+  }
+}
+
+// `setCoins`는 이제 두 가지 일을 합니다: 화면 업데이트 및 DB 저장
+function setCoins(value) {
+  updateCoinBadge(value);
+  saveCoinsToSupabase(value);
+}
+
+// `getCoins`는 이제 앱 내 변수에서 값을 가져옵니다.
+function getCoins() {
+  return currentCoins;
+}
+
+initializeCoins(); // 페이지 시작 시 코인 초기화 함수 실행
 
 document.getElementById('earn-coin').addEventListener('click', () => {
   setCoins(getCoins() + 1);
