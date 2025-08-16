@@ -47,11 +47,6 @@ document.querySelectorAll('.js-nav').forEach((el) => {
   });
 });
 
-// CTA button navigation
-document.getElementById('cta-start').addEventListener('click', () => {
-  setHash('learning');
-});
-
 document.querySelectorAll('[data-close]').forEach((btn) =>
   btn.addEventListener('click', closeDrawer)
 );
@@ -70,15 +65,11 @@ document.querySelectorAll('[data-close]').forEach((btn) =>
   // preload next as well for smooth swap tomorrow
   const preload = new Image();
   preload.src = `./assets/${images[(idx+1)%images.length]}`;
-  // Apply jpg override when file exists
-  fetch(url, { method: 'HEAD' })
-    .then((res) => {
-      if (res.ok) {
-        document.documentElement.style.setProperty('--season-image', `url('${url}')`);
-        document.body.classList.add('bg-hero');
-      }
-    })
-    .catch(() => {});
+
+  // 웹 서버 없이도 배경이 잘 보이도록 fetch() 확인 로직을 제거합니다.
+  // 이제 미리 로드된 JPG 이미지가 항상 존재한다고 가정합니다.
+  document.documentElement.style.setProperty('--season-image', `url('${url}')`);
+  document.body.classList.add('bg-hero');
 })();
 
 // Hash routing (deep link)
@@ -97,66 +88,143 @@ function applyFromHash() {
 window.addEventListener('hashchange', applyFromHash);
 applyFromHash();
 
-// Supabase와 연동되는 새로운 코인 관리 코드
+// --- 사용자 인증 및 데이터 관리 ---
 
-let currentCoins = 0; // 코인 값을 앱 내에서 기억하기 위한 변수
+const supabase = window.supabaseClient;
+let user = null;
+let profile = null;
 
-// 페이지가 처음 로드될 때 Supabase에서 코인 값을 가져옵니다.
-async function initializeCoins() {
-  const { data, error } = await window.supabaseClient
-    .from('korean_coin') // 사용자가 만든 테이블 이름
-    .select('coin')
-    .eq('id', 1) // id가 1인 데이터 한 줄을 선택합니다.
-    .single();
+const authContainer = document.getElementById('auth-container');
+const userInfoContainer = document.getElementById('user-info');
+const userEmailEl = document.getElementById('user-email');
 
+// 로그인/회원가입 UI 템플릿
+const authFormHTML = `
+  <input type="email" id="email-input" placeholder="Email" required />
+  <input type="password" id="password-input" placeholder="Password" required />
+  <button class="btn" onclick="signUp()">Sign Up</button>
+  <button class="btn" onclick="logIn()">Log In</button>
+`;
+
+async function signUp() {
+  const email = document.getElementById('email-input').value;
+  const password = document.getElementById('password-input').value;
+  const { error } = await supabase.auth.signUp({ email, password });
   if (error) {
-    console.error('코인 정보 로딩 실패:', error);
-  } else if (data) {
-    currentCoins = data.coin;
-    updateCoinBadge(currentCoins);
+    alert('Error signing up: ' + error.message);
+  } else {
+    alert('Sign up successful! Please check your email to verify.');
   }
 }
 
+async function logIn() {
+  const email = document.getElementById('email-input').value;
+  const password = document.getElementById('password-input').value;
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) alert('Error logging in: ' + error.message);
+}
+
+async function logOut() {
+  const { error } = await supabase.auth.signOut();
+  if (error) alert('Error logging out: ' + error.message);
+}
+
+// 로그인 상태가 바뀔 때마다 UI와 데이터를 업데이트합니다.
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    user = session.user;
+    await fetchUserProfile();
+    updateUIForLoggedInUser();
+  } else if (event === 'SIGNED_OUT') {
+    user = null;
+    profile = null;
+    updateUIForLoggedOutUser();
+  }
+});
+
+// 사용자 프로필(코인 정보 포함)을 가져옵니다. 없으면 새로 만듭니다.
+async function fetchUserProfile() {
+  if (!user) return;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  if (error && error.code !== 'PGRST116') { // PGRST116: 'single' query did not return a row
+    console.error('Error fetching profile:', error);
+  } else if (data) {
+    profile = data;
+  } else {
+    // 프로필이 없으면 새로 생성 (회원가입 직후)
+    const { data: newProfile, error: insertError } = await supabase
+      .from('profiles')
+      .insert({ id: user.id, email: user.email, coins: 0 })
+      .select()
+      .single();
+    if (insertError) {
+      console.error('Error creating profile:', insertError);
+    } else {
+      profile = newProfile;
+    }
+  }
+  updateCoinBadge(getCoins());
+}
+
+// 로그인 상태 UI 업데이트
+function updateUIForLoggedInUser() {
+  if (authContainer) {
+    authContainer.innerHTML = '';
+    authContainer.style.display = 'none';
+  }
+  if (userInfoContainer && userEmailEl && user) {
+    userEmailEl.textContent = user.email;
+    userInfoContainer.style.display = 'flex';
+  }
+}
+
+// 로그아웃 상태 UI 업데이트
+function updateUIForLoggedOutUser() {
+  if (userInfoContainer) userInfoContainer.style.display = 'none';
+  if (userEmailEl) userEmailEl.textContent = '';
+  if (authContainer) {
+    authContainer.innerHTML = authFormHTML;
+    authContainer.style.display = 'flex';
+  }
+  updateCoinBadge(0);
+}
+
+// --- 사용자별 코인 관리 시스템 ---
+
 // 화면의 코인 배지를 업데이트하는 함수
 function updateCoinBadge(value) {
-  const v = Math.max(0, Number(value) || 0);
   const badge = document.getElementById('coin-badge');
-  badge.textContent = String(v);
+  badge.textContent = String(value);
   badge.classList.remove('bump');
   void badge.offsetWidth; // 애니메이션 재시작을 위한 트릭
   badge.classList.add('bump');
 }
 
-async function saveCoinsToSupabase(value) {
-  console.log('1. saveCoinsToSupabase 함수가 호출되었습니다. 저장할 코인 값:', value);
-
-  const v = Math.max(0, Number(value) || 0);
-  currentCoins = v;
-
-  const { error } = await window.supabaseClient
-    .from('korean_coin')
-    .update({ coin: v })
-    .eq('id', 1);
-
-  if (error) {
-    console.error('2. 코인 정보 저장 실패! Supabase 에러:', error);
-  } else {
-    console.log('3. 코인 정보 저장 성공! Supabase에 저장된 값:', v);
+// `setCoins`는 화면 업데이트 및 DB 저장을 담당합니다.
+async function setCoins(value) {
+  if (!user || !profile) {
+    alert('Please log in to save your coins!');
+    return;
   }
-}
-
-// `setCoins`는 이제 두 가지 일을 합니다: 화면 업데이트 및 DB 저장
-function setCoins(value) {
+  const newCoins = Math.max(0, Number(value) || 0);
+  profile.coins = newCoins; // 로컬 프로필 객체 업데이트
   updateCoinBadge(value);
-  saveCoinsToSupabase(value);
+  const { error } = await supabase.from('profiles').update({ coins: newCoins }).eq('id', user.id);
+  if (error) console.error('Error saving coins:', error);
 }
 
-// `getCoins`는 이제 앱 내 변수에서 값을 가져옵니다.
+// `getCoins`는 현재 로그인한 사용자의 코인을 가져옵니다.
 function getCoins() {
-  return currentCoins;
+  return profile?.coins ?? 0;
 }
 
-initializeCoins(); // 페이지 시작 시 코인 초기화 함수 실행
+// 페이지 로드 시 초기 UI 상태 설정
+updateUIForLoggedOutUser();
 
 document.getElementById('earn-coin').addEventListener('click', () => {
   setCoins(getCoins() + 1);
