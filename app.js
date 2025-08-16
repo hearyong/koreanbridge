@@ -157,11 +157,17 @@ async function fetchUserProfile() {
     profile = data;
   } else {
     // 프로필이 없으면 새로 생성 (회원가입 직후)
+    // 프로필이 없으면 새로 생성 (회원가입 직후)
     const { data: newProfile, error: insertError } = await supabase
       .from('profiles')
-      .insert({ id: user.id, email: user.email, coins: 0 })
+      .insert({ 
+        id: user.id, 
+        username: user.email.split('@')[0], // email을 username으로 바꾸고, @ 뒷부분은 잘라냅니다.
+        coins: 0 
+      })
       .select()
       .single();
+      
     if (insertError) {
       console.error('Error creating profile:', insertError);
     } else {
