@@ -25,6 +25,14 @@
           <h1 data-i18n="title">KoreanBridge</h1>
         </div>
         <div class="header-actions">
+
+          <div id="auth-container" style="display: flex; gap: 8px; align-items: center;">
+            </div>
+
+          <div id="user-info" style="display: none; align-items: center; gap: 8px;">
+            <span id="user-email" style="font-weight: bold;"></span>
+            <button class="btn" onclick="logOut()">Log Out</button>
+          </div>
           <label class="lang-label" for="lang-select" data-i18n="language">Language</label>
           <select id="lang-select" class="lang-select" aria-label="Language select">
             <option value="en" selected>English</option>
@@ -39,8 +47,8 @@
             <option value="fil">Filipino</option>
             <option value="vi">Tiếng Việt</option>
           </select>
-          <div id="auth-container">
-            
+          <button id="cta-start" class="cta" data-i18n="ctaStart" style="display: none;">Start Learning for Free</button>
+
         </div>
       </header>
 
@@ -269,8 +277,10 @@
         </div>
       </section>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-client.js"></script>
     <script src="app.js"></script>
+
   </body>
   </html>
