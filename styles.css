@@ -116,6 +116,6 @@ body.season-winter { background-image: url('./assets/bg/winter.svg'); }
 /* If seasonal JPG exists, this will override SVG backgrounds */
 body.bg-hero {
   background-image:
-    linear-gradient(180deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.20) 20%, rgba(255,255,255,0.88) 75%),
+   /* linear-gradient(180deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.20) 20%, rgba(255,255,255,0.88) 75%), */
     var(--season-image);
 }
