@@ -25,13 +25,8 @@
         </div>
         <div class="header-actions">
 
-          <div id="auth-container" style="display: flex; gap: 8px; align-items: center;">
-            </div>
-
-          <div id="user-info" style="display: none; align-items: center; gap: 8px;">
-            <span id="user-email" style="font-weight: bold;"></span>
-            <button class="btn" onclick="logOut()">Log Out</button>
-          </div>
+          
+          
           <label class="lang-label" for="lang-select" data-i18n="language">Language</label>
           <select id="lang-select" class="lang-select" aria-label="Language select">
             <option value="en" selected>English</option>
@@ -217,6 +212,13 @@
         </button>
         <button class="nav-item js-nav" data-target="travel">🧳 <span data-i18n="navTravel">Travel</span></button>
         <button class="nav-item js-nav" data-target="dictionary">📘 <span data-i18n="navDictionary">Dictionary</span></button>
+        <!-- 이 부분을 새로 추가하세요 -->
+                <button id="auth-nav-button" class="nav-item">
+                  <span class="nav-icon">👤</span>
+                  <span id="auth-nav-text" class="nav-text" data-i18n="login">Login</span>
+                </button>
+                <!-- 여기까지 추가 -->
+
       </nav>
 
       <section id="view-rewards" class="drawer" aria-labelledby="rewards-heading" aria-hidden="true">
@@ -250,6 +252,10 @@
           <h2 id="dictionary-heading" data-i18n="navDictionary">Dictionary</h2>
           <button class="btn close" data-close>✕</button>
         </div>
+
+         
+
+
         <div class="feature">
           <h3 data-i18n="dictTool1">Batchim Remover</h3>
           <input id="dict-input" class="input" placeholder="예: 맛있다 → 맛이따" />
@@ -281,5 +287,29 @@
     <script src="supabase-client.js"></script>
     <script src="app.js"></script>
     
+        <!-- 이 코드를 </body> 바로 위에 붙여넣어 주세요 -->
+    <div id="auth-modal" class="modal">
+        <!-- 모달 내용물 -->
+        <div class="modal-content">
+            <span id="close-modal-button" class="close-button">&times;</span>
+            <h2 data-i18n="welcomeTitle">Welcome to KoreanBridge</h2>
+            
+            <div class="form-group">
+                <label for="email-input" data-i18n="emailLabel">Email</label>
+                <input type="email" id="email-input" placeholder="you@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password-input" data-i18n="passwordLabel">Password</label>
+                <input type="password" id="password-input" placeholder="••••••••">
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="signUp()" data-i18n="signUp">Sign Up</button>
+                <button onclick="logIn()" data-i18n="login">Log In</button>
+            </div>
+        </div>
+    </div>
+
   </body>
 </html>
